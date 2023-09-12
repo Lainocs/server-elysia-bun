@@ -1,4 +1,4 @@
-const getPosts = async (req, res) => {
+const getPosts = async () => {
 	return [
 		{ id: 1, title: 'Hello World' },
 		{ id: 2, title: 'Hello World 2' },
@@ -6,8 +6,8 @@ const getPosts = async (req, res) => {
 	]
 }
 
-const getPost = async (req, res) => {
-	return `Hello World ${req}`
+const getPost = async (id) => {
+	return `Hello World ${id}`
 }
 
 export { getPosts, getPost }
