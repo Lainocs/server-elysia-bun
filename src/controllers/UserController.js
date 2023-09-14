@@ -1,35 +1,43 @@
-const login = async () => {
-  let { email, password } = {
-    email: 'lainocs@test.fr',
-    password: '123soleil'
-  }
+import { PrismaClient } from "@prisma/client"
 
-  let hashedPass = await Bun.password.hash(password, {
-    algorithm: 'bcrypt',
-    saltRounds: 10
+const prisma = new PrismaClient()
+
+const login = async (email, password) => {
+  let user = await prisma.user.findUnique({
+    where: {
+      email
+    }
   })
 
-  let isSame = await Bun.password.verify("123soleil", hashedPass)
-
-  if (!isSame) {
-    return 'Wrong password'
+  if (!user) {
+    throw new Error('User not found')
   }
 
-  return { email, hashedPass }
+  let isPasswordCorrect = await Bun.password.verify(password, user.password)
+
+  if (!isPasswordCorrect) {
+    throw new Error('Incorrect password')
+  }
+
+  return user
 }
 
-const register = async () => {
-  let { email, password } = {
-    email: 'lainocs@test.fr',
-    password: '123soleil'
-  }
+const register = async (email, name, password) => {
 
   let hashedPass = await Bun.password.hash(password, {
     algorithm: 'bcrypt',
     saltRounds: 10
   })
 
-  return { email, hashedPass }
+  let user = await prisma.user.create({
+    data: {
+      email,
+      name,
+      password: hashedPass
+    }
+  })
+
+  return user
 }
 
 export { login, register }
